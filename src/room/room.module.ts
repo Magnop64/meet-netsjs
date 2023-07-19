@@ -5,7 +5,7 @@ import { meetModule } from 'src/meet/meet.module';
 import { moduleUser } from 'src/user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PositionSchema, position } from './schema/orientation.schema';
-import { gateweyroom } from './room.gatewey';
+import { gateweyRoom } from './room.gatewey';
 
 @Module({
   imports:[meetModule, moduleUser,
@@ -13,7 +13,7 @@ import { gateweyroom } from './room.gatewey';
       {name: position.name, schema: PositionSchema}
     ])
   ],
-  providers: [RoomService, gateweyroom],
+  providers: [RoomService, gateweyRoom],
   controllers: [RoomController]
 })
 export class RoomModule {}

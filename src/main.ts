@@ -19,6 +19,6 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api'); // define o caminho da rota.
 
-  await app.listen(3000);
+  await app.listen(3333);
 }
 bootstrap();

@@ -12,8 +12,8 @@ type activeSocketsType = {
     userId: string;
 }
 
-@WebSocketGateway()
-export class gateweyroom implements OnGatewayInit, OnGatewayDisconnect{
+@WebSocketGateway({cors: true})
+export class gateweyRoom implements OnGatewayInit, OnGatewayDisconnect{
 
     constructor(
         private readonly service: RoomService
@@ -21,10 +21,10 @@ export class gateweyroom implements OnGatewayInit, OnGatewayDisconnect{
 
     @WebSocketServer() wss: Server;
 
-    private readonly logger = new Logger(gateweyroom.name);
+    private logger = new Logger(gateweyRoom.name);
     private activeSckets : activeSocketsType[] = [];
 
-    afterInit(server: any) {
+    afterInit() {
         this.logger.debug(`gatewey initialized`);
     }
 
@@ -34,7 +34,7 @@ export class gateweyroom implements OnGatewayInit, OnGatewayDisconnect{
             socket => socket.id === client.id
         );
 
-        if(!existOnSocket)return;
+        if(!existOnSocket)return
 
         this.activeSckets = this.activeSckets.filter(
             socket => socket.id !== client.id
@@ -47,13 +47,11 @@ export class gateweyroom implements OnGatewayInit, OnGatewayDisconnect{
     }
 
     @SubscribeMessage('join')
-    async handlejoin(client: Socket, payload: JoinRoomDto){
+    async handleMessage(client: Socket, payload: JoinRoomDto){
         const {link , userId } = payload;
-
         const existeSocket = this.activeSckets.find(
-            socket => socket.room === link && socket.id === client.id
+           ( socket) => socket.room === link && socket.id === client.id
         );
-
         if(!existeSocket){
             this.activeSckets.push({room: link, id: client.id, userId});
 
@@ -67,18 +65,18 @@ export class gateweyroom implements OnGatewayInit, OnGatewayDisconnect{
 
             await this.service.updatPositionUser(client.id, dto);
             const users = await this.service.positionUsersByLink(link);
-
+console.log(`user - ${users}`)
             //mostra para todps a atualização
-            this.wss.emit(`${link} - update-users-list${users}`);
+            this.wss.emit(`${link} - update-users-list${users}`,{users});
             //mostra para todos , menos para min.
             client.broadcast.emit(`${link} - add-user `, {user: client.id});
         }
-        this.logger.debug(`Socket client ${client.id}start to join room ${link}`);
+        this.logger.debug(`Socket client ${client.id} start to join room ${link}`);
     } 
 
     @SubscribeMessage('move')
     async handleMove(client: Socket, payload: UpdateUserPosition){
-        const {link , userId, x, y, orientation } = payload;
+        const {link , userId} = payload;
 
         const dto = {
             link,
@@ -105,7 +103,7 @@ export class gateweyroom implements OnGatewayInit, OnGatewayDisconnect{
     }
 
     @SubscribeMessage('call-user')
-    async calluser(client: Socket, data: any){
+    async callUser(client: Socket, data: any){
         this.logger.debug(`${client.id} to: ${data.to}`);
         client.to(client.id).emit('call.made',{
             offer: data.offer,

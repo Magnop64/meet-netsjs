@@ -72,12 +72,12 @@ export class RoomService {
             use.user.toString() === user._id.toString() || use.clientId === clientId)
 
         if(loggerUserInRoom){
-            await this.PositionModel.findByIdAndUpdate({_id: loggerUserInRoom._id},position)
+            return await this.PositionModel.findByIdAndUpdate({_id: loggerUserInRoom._id},position)
         }else{
             if(userInRoom && userInRoom.length > 10){
                 throw new BadRequestException(MessageRoom.ROOM_MAX_USERS);
             }
-            await this.PositionModel.create(position);
+            return await this.PositionModel.create(position);
         }
     }
 
